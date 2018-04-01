@@ -184,19 +184,20 @@ $query3 = $mysqli->query("SELECT prod_id, product_code, prod_category, product_n
 						</div>
 						<div class="filter-group">
 							<label>Status</label>
-							<select class="form-control">
-								<option>Any</option>
-								<option>Confirmed</option>
+							<select name="users" onchange="showUser(this.value)">
+								<option value="">Any</option>
+								<option value="a">Confirmed</option>
 
-								<option>Pending</option>
-								<option>Cancelled</option>
+								<option value="b">Pending</option>
+								<option value="c">Cancelled</option>
 							</select>
 						</div>
+
 						<span class="filter-icon"><i class="fa fa-filter"></i></span>
                     </div>
                 </div>
 			</div>
-			
+
             <table class="table table-striped table-hover">
                 <thead>
                     <tr>
@@ -233,9 +234,9 @@ $query3 = $mysqli->query("SELECT prod_id, product_code, prod_category, product_n
                       <?php } ?>
                 </tbody>
             </table>
-			
-			
-			
+
+
+
 			<div class="clearfix">
                 <div class="hint-text">Showing <b>5</b> out of <b>25</b> entries</div>
                 <ul class="pagination">
@@ -293,7 +294,7 @@ $query3 = $mysqli->query("SELECT prod_id, product_code, prod_category, product_n
                       <?php } ?>
                 </tbody>
             </table></div></div>
-			
+
 			<div class="container">
         <div class="table-wrapper">
 	<div class="table-title">
@@ -313,7 +314,7 @@ $query3 = $mysqli->query("SELECT prod_id, product_code, prod_category, product_n
 						<th>Product Quantity</th>
 						<th>Product Price</th>
 						<th>Go to product page</th>
-						
+
                     </tr>
                 </thead>
                 <tbody>
@@ -349,4 +350,27 @@ $("#sort").change(function(){
 
     alert('Selected value: ' + $(this).val());
 });
+
+
+function showUser(str) {
+    if (str == "") {
+        document.getElementById("txtHint").innerHTML = "";
+        return;
+    } else {
+        if (window.XMLHttpRequest) {
+            // code for IE7+, Firefox, Chrome, Opera, Safari
+            xmlhttp = new XMLHttpRequest();
+        } else {
+            // code for IE6, IE5
+            xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+        }
+        xmlhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                document.getElementById("txtHint").innerHTML = this.responseText;
+            }
+        };
+        xmlhttp.open("GET","getuser.php?q="+str,true);
+        xmlhttp.send();
+    }
+}
 </script>
