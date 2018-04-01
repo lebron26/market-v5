@@ -34,11 +34,18 @@ if(!empty($_GET['status'])){
             $statusMsg = '';
     }
 }
+function fill_status($mysqli)
+{
+  $output ='';
+  $sql = $mysqli->query("SELECT * from category");
 
-
+  while($row = mysqli_fetch_array($sql))
+  {
+    $output .='<option value= "'.$row["prod_category"].'">'.$row["description"].'</option>';
+  }
+  return $output;
+}
 ?>
-
-
 
 <html lang="en">
 <head>
@@ -68,7 +75,6 @@ $(document).ready(function(){
 $state="w/point";
 $query = $mysqli->query("SELECT u.tsa_num as tsa_num, u.fname as fname, u.lname as lname, u.date_hired as date_hired, u.emp_stat as emp_stat, sum(points) as points FROM users u INNER JOIN cib c where u.tsa_num=c.tsa_num GROUP by u.tsa_num ORDER BY id DESC");
 $query2 = $mysqli->query("SELECT cib_id, tsa_num, proj_name,points from cib order by cib_id asc");
-$query3 = $mysqli->query("SELECT prod_id, product_code, prod_category, product_name,product_desc, product_img_name, qty, price from products order by prod_id asc")
 ?>
   <?php if(!empty($statusMsg)){
       echo '<div class="alert '.$statusMsgClass.'">'.$statusMsg.'</div>';
@@ -97,10 +103,14 @@ $query3 = $mysqli->query("SELECT prod_id, product_code, prod_category, product_n
 
 		        <div class="table-filter">
               <div class="row">
-                <form action="importData.php" method="post" enctype="multipart/form-data" id="importFrm" style="display: none">
 
-                  <div class="col-sm-4"> <input type="file" name="file" /><input type="submit" class="btn btn-primary" name="importSubmit" value="IMPORT Members"></div>
-
+                <form class="upload_csv" method="post" enctype="multipart/form-data" id="importFrm" style="display: none">
+                  <div class="col-md-4">
+                                <input type="file" name="employee_file" style="margin-top:15px;"/>
+                  </div>
+                  <div class="col-sm-4">
+                    <input type="submit" style="margin-top:10px;" class="btn btn-primary" name="upload" id="upload" value="IMPORT Members"></div>
+                      <div style="clear:both"></div>
 
                 </form>
                 <form action="importCIB.php" method="post" enctype="multipart/form-data" id="importCIB" style="display: none">
@@ -117,9 +127,9 @@ $query3 = $mysqli->query("SELECT prod_id, product_code, prod_category, product_n
                 </form>
                 <form action="functions.php" method="post" name="upload_excel" id="exportFrm" enctype="multipart/form-data" style="display: none">
                   <div class="col-md-4 col-md-offset-4">
-                            <input type="submit" name="Export" class="btn btn-info" value="export Members"/>
-                            <input type="submit" name="ExportCIB" class="btn btn-info" value="export CIB"/>
-							<input type="submit" name="ExportProd" class="btn btn-info" value="export products"/>
+                            <input type="submit" name="Export" class="btn btn-info" value="export Members.csv"/>
+                            <input type="submit" name="ExportCIB" class="btn btn-info" value="export CIB.csv"/>
+							<input type="submit" name="ExportProd" class="btn btn-info" value="export products.csv"/>
                     </div>
 
                   </form>
@@ -182,17 +192,6 @@ $query3 = $mysqli->query("SELECT prod_id, product_code, prod_category, product_n
 
               </form>
 						</div>
-						<div class="filter-group">
-							<label>Status</label>
-							<select name="users" onchange="showUser(this.value)">
-								<option value="">Any</option>
-								<option value="a">Confirmed</option>
-
-								<option value="b">Pending</option>
-								<option value="c">Cancelled</option>
-							</select>
-						</div>
-
 						<span class="filter-icon"><i class="fa fa-filter"></i></span>
                     </div>
                 </div>
@@ -295,53 +294,7 @@ $query3 = $mysqli->query("SELECT prod_id, product_code, prod_category, product_n
                 </tbody>
             </table></div></div>
 
-			<div class="container">
-        <div class="table-wrapper">
-	<div class="table-title">
-                <div class="row">
-	<div class="col-sm-4">
-						                <h2>Products <b> List</b></h2>
-                     </div></div></div>
-	 <table class="table table-striped table-hover">
-                <thead>
-                    <tr>
-                        <th>Product ID</th>
-                        <th>Product Code</th>
-						<th>Product Category</th>
-						<th>Product Name</th>
-						<th>Product Description</th>
-						<th>Product Image Name</th>
-						<th>Product Quantity</th>
-						<th>Product Price</th>
-						<th>Go to product page</th>
 
-                    </tr>
-                </thead>
-                <tbody>
-                  <?php
-                      //get records from database
-                    if($query3->num_rows > 0){
-                          while($row = $query3->fetch_assoc()){
-                            if($row['product_code']!='0'&&$row['product_code']!='1'){?>
-                      <tr>
-                        <td><?php echo $row['prod_id']; ?></td>
-                        <td><?php echo $row['product_code']; ?> </td>
-						<td><?php echo $row['prod_category']; ?> </td>
-						<td><?php echo $row['product_name']; ?> </td>
-						<td><?php echo $row['product_desc']; ?> </td>
-						<td><?php echo $row['product_img_name']; ?> </td>
-						<td><?php echo $row['qty']; ?> </td>
-                        <td><?php echo $row['price']; ?></td>
-                    <td><?php echo '<a href="product_detail.php?id='.$row['prod_id'].'" class="view" title="View Details" data-toggle="tooltip"><i class="material-icons">&#xE5C8;</i></a>';?></td>
-
-
-                        <!--<td><?//php echo ($row['status'] == '1')?'Active':'Inactive'; ?></td>-->
-                      </tr>
-                    <?php }} }else{ ?>
-                      <tr><td colspan="4">No product(s) found.....</td></tr>
-                      <?php } ?>
-                </tbody>
-            </table></div></div>
 </body>
 </html>
 
@@ -350,27 +303,18 @@ $("#sort").change(function(){
 
     alert('Selected value: ' + $(this).val());
 });
-
-
-function showUser(str) {
-    if (str == "") {
-        document.getElementById("txtHint").innerHTML = "";
-        return;
-    } else {
-        if (window.XMLHttpRequest) {
-            // code for IE7+, Firefox, Chrome, Opera, Safari
-            xmlhttp = new XMLHttpRequest();
-        } else {
-            // code for IE6, IE5
-            xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
-        }
-        xmlhttp.onreadystatechange = function() {
-            if (this.readyState == 4 && this.status == 200) {
-                document.getElementById("txtHint").innerHTML = this.responseText;
-            }
-        };
-        xmlhttp.open("GET","getuser.php?q="+str,true);
-        xmlhttp.send();
-    }
-}
+$('.upload_csv').on("submit", function(e){
+                e.preventDefault(); //form will not submitted
+                $.ajax({
+                     url:"importData.php",
+                     method:"POST",
+                     data:new FormData(this),
+                     contentType:false,          // The content type used when sending data to the server.
+                     cache:false,                // To unable request pages to be cached
+                     processData:false,          // To send DOMDocument or non processed data file it is set to false
+                     success: function(data){
+                          console.log(data);
+                     }
+                })
+           });
 </script>

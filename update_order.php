@@ -8,8 +8,8 @@ if(isset($_SESSION['cart'])) {
 
   $total = 0;
   $user = $_SESSION["username"];
-  $query = $mysqli->query("INSERT INTO order_main (or_date,tsa_num,status)
-  VALUES( CURRENT_TIMESTAMP,'$user','unpaid')");
+  $query = $mysqli->query("INSERT INTO order_main (or_date,tsa_num,status_id)
+  VALUES( CURRENT_TIMESTAMP,'$user',1)");
   if($query)
   {
     $order=$mysqli->query("SELECT id FROM order_main ORDER BY id DESC LIMIT 1");

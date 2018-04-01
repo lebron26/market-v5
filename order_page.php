@@ -169,6 +169,7 @@ $(document).ready(function(){
                     <tr>
                         <th>Order #</th>
                         <th>TSA #</th>
+                        <th>Name</th>
                         <th>Date</th>
                         <th>Status</th>
 						            <th>Action</th>
@@ -177,7 +178,7 @@ $(document).ready(function(){
                 <tbody>
                  <?php
                       //get records from database
-                      $query = $mysqli->query("SELECT o1.id as id, u.tsa_num as tsa, u.fname as fname, u.lname as lname, o1.or_date as date, o1.status as status FROM order_main o1 INNER JOIN users u on o1.tsa_num=u.tsa_num GROUP BY o1.id");
+                      $query = $mysqli->query("SELECT o1.id as id, u.tsa_num as tsa, u.fname as fname, u.lname as lname, o1.or_date as date, s.description as status FROM order_main o1 INNER JOIN users u on o1.tsa_num=u.tsa_num inner join order_status s on s.status_id=o1.status_id GROUP BY o1.id");
                       if($query->num_rows > 0){
                           while($row = $query->fetch_assoc()){
                             if($row['tsa']!='0'&&$row['tsa']!='1'){

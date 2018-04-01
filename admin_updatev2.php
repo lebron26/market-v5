@@ -9,7 +9,7 @@ $id = $_GET['id'];
 $user = $_SESSION["last"];
   //$query = $mysqli->query("INSERT INTO order_main (or_date,tsa_num,status)
   //VALUES( CURRENT_TIMESTAMP,'$user','unpaid')");
-$result = $mysqli->query("SELECT o1.status as stat, o1.id as id,p.product_name as product_name, p.prod_id as prod_id, o2.qty as qty, p.qty as stock,o2.price as price FROM order_main o1 INNER JOIN order_details o2 ON o1.id = o2.id INNER JOIN products p on o2.prod_id=p.prod_id  WHERE o1.id='".$id."' GROUP BY or_id");
+$result = $mysqli->query("SELECT s.status_id as stat, o1.id as id,p.product_name as product_name, p.prod_id as prod_id, o2.qty as qty, p.qty as stock,o2.price as price FROM order_main o1 INNER JOIN order_details o2 ON o1.id = o2.id INNER JOIN products p on o2.prod_id=p.prod_id INNER JOIN order_status s on s.status_id = o1.status_id WHERE o1.id='".$id."' GROUP BY or_id");
 
 if($result)
 {
@@ -23,9 +23,9 @@ if($result)
          if(!($newqty<0)){
          $update = $mysqli->query("UPDATE products SET qty =".$newqty." WHERE prod_id =".$obj->prod_id);
          if($update){
-           $status="Confirmed";
+           $status="2";
 
-           $order = $mysqli->query("UPDATE order_main SET status ='".$status."' WHERE id =".$id);
+           $order = $mysqli->query("UPDATE order_main SET status_id ='".$status."' WHERE id =".$id);
            echo $status;
              header("location:order_page.php");
          }

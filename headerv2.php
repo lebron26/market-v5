@@ -5,7 +5,7 @@ if(session_id() == '' || !isset($_SESSION)){session_start();}
 include 'config.php';
 
 
-  $result2 = $mysqli->query("SELECT count(*) as count FROM `order_main` WHERE STATUS = 'unpaid'");
+  $result2 = $mysqli->query("SELECT count(*) as count FROM `order_main` WHERE status_id = 1");
 
   if($result2){
 
@@ -28,7 +28,8 @@ include 'config.php';
   </div>
   	<!-- NAVIGATIONS -->
     <ul class="nav navbar-nav navbar-right">
-      <li><a href="order_page.php">Orders<span class="badge"><?php echo $count ?></span></a></li>'
+      <li><a href="order_page.php">Orders<span class="badge"><?php echo $count ?></span></a></li>
+      <li><a href="admin_product.php">Products</a></li>
       <li class="dropdown">
         <a class="dropdown-toggle" data-toggle="dropdown" href="#">Hey Admin
           <span class="caret"></span></a>

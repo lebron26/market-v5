@@ -1,52 +1,52 @@
+
+
 <?php
-//load the database configuration file
-include 'config.php';
+ if(!empty($_FILES["employee_file"]["name"]))
+ {
+      include 'config.php';
 
-if(isset($_POST['importSubmit'])){
-  $mimes = array('text/x-comma-separated-values', 'text/comma-separated-values', 'application/octet-stream', 'application/vnd.ms-excel', 'application/x-csv', 'text/x-csv', 'text/csv', 'application/csv', 'application/excel', 'application/vnd.msexcel', 'text/plain');
+      $output = '';
+      $allowed_ext = array("csv");
+      $extension = end(explode(".", $_FILES["employee_file"]["name"]));
+      if(in_array($extension, $allowed_ext))
+      {
+           $file_data = fopen($_FILES["employee_file"]["tmp_name"], 'r');
+           fgetcsv($file_data);
+           while($row = fgetcsv($file_data))
+           {
+                $id = mysqli_real_escape_string($mysqli, $row[0]);
+                $tsa_num = mysqli_real_escape_string($mysqli, $row[1]);
+                $lname = mysqli_real_escape_string($mysqli, $row[2]);
+                $fname = mysqli_real_escape_string($mysqli, $row[3]);
+                $date_hired = mysqli_real_escape_string($mysqli, $row[4]);
+                $emp_stat = mysqli_real_escape_string($mysqli, $row[5]);
+                $designation = mysqli_real_escape_string($mysqli, $row[6]);
+                $dept = mysqli_real_escape_string($mysqli, $row[7]);
+                $dept_two = mysqli_real_escape_string($mysqli, $row[8]);
+                $div = mysqli_real_escape_string($mysqli, $row[9]);
+                $div_two = mysqli_real_escape_string($mysqli, $row[10]);
+                $team = mysqli_real_escape_string($mysqli, $row[11]);
+                $remarks = mysqli_real_escape_string($mysqli, $row[12]);
+                $type = mysqli_real_escape_string($mysqli, $row[13]);
+                $password = mysqli_real_escape_string($mysqli, $row[14]);
+                echo $row[9];
+                $query="INSERT INTO users (id, tsa_num,lname, fname,date_hired,emp_stat,designation, dept,dept_two, div, div_two, team, remarks, type, password)
+                VALUES ($id,$tsa_num,'$lname','$fname','$date_hired','$emp_stat','$designation','$dept','$dept_two', '$div','$div_two','$team','$remarks','$type','$password')";
+                 $result=$mysqli->query("INSERT INTO users (id,tsa_num,lname,fname,date_hired,emp_stat,designation,dept,dept_two,div) VALUES ($id, $tsa_num,'$lname','$fname','$date_hired','$emp_stat','$designation','$dept','$dept_two','$div')");
+                 $result2=$mysqli->query("SELECT * FROM products");
+           }
+           if($result !== false )
+           echo 'ok';
+           else echo 'not ok';
 
-  if(in_array($_FILES['file']['type'],$mimes)){
-    // do something
-  } else {
-    die("Sorry, mime type not allowed");
-  }
-    //validate whether uploaded file is a csv file
-    $csvMimes = array('text/x-comma-separated-values', 'text/comma-separated-values', 'application/octet-stream', 'application/vnd.ms-excel', 'application/x-csv', 'text/x-csv', 'text/csv', 'application/csv', 'application/excel', 'application/vnd.msexcel', 'text/plain');
-    if(!empty($_FILES['file']['name']) && in_array($_FILES['file']['type'],$csvMimes)){
-        if(is_uploaded_file($_FILES['file']['tmp_name'])){
-
-            //open uploaded csv file with read only mode
-            $csvFile = fopen($_FILES['file']['tmp_name'], 'r');
-
-            //skip first line
-            fgetcsv($csvFile);
-
-            //parse data from csv file line by line
-            while(($line = fgetcsv($csvFile)) !== FALSE){
-                //check whether member already exists in database with same email
-                $prevQuery = "SELECT id FROM users WHERE tsa_num = '".$line[1]."'";
-                $prevResult = $mysqli->query($prevQuery);
-                if($prevResult->num_rows > 0){
-                    //update member data
-                    $mysqli->query("UPDATE users SET id = '".$line[0]."', lname = '".$line[2]."', fname = '".$line[3]."' WHERE tsa_num = '".$line[1]."'");
-                }else{
-                    //insert member data into database
-                    $mysqli->query("INSERT INTO users (id, tsa_num,lname, fname) VALUES ('".$line[0]."','".$line[1]."','".$line[2]."','".$line[3]."')");
-                }
-            }
-
-            //close opened csv file
-            fclose($csvFile);
-
-            $qstring = '?status=succ';
-        }else{
-            $qstring = '?status=err';
-        }
-    }else{
-        $qstring = '?status=invalid_file';
-    }
-}
-
-
-//redirect to the listing page
-header("Location: admin.php".$qstring);
+      }
+      else
+      {
+           echo 'Error1';
+      }
+ }
+ else
+ {
+      echo "Error2";
+ }
+ ?>

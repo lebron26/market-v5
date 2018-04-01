@@ -12,11 +12,13 @@ $result = $mysqli->query("SELECT o1.id as id,p.product_name as product_name, o2.
 if($result === FALSE){
   die(mysql_error());
 }
-$result2 = $mysqli->query("SELECT u.lname as lastname, u.fname as firstname,o1.or_date as date, o1.status as stat FROM order_main o1  inner join users u on u.tsa_num= o1.tsa_num WHERE o1.id='".$id."' GROUP BY o1.id");
+$result2 = $mysqli->query("SELECT u.lname as lastname, u.fname as firstname,o1.or_date as adate, s.status_id as stat FROM order_main o1 inner join users u on u.tsa_num= o1.tsa_num inner join order_status s on s.status_id= o1.status_id WHERE o1.id='".$id."' GROUP BY o1.id");
 if($result2) {
   if($obj = $result2->fetch_object()) {
 $_SESSION['id'] = $id;
-$_SESSION['date'] = $obj->date;
+$_SESSION['date'] = $obj->adate;
+
+
 //$_SESSION['stat'] = $obj->status;
 $_SESSION['last'] = $obj->lastname;
 }}
