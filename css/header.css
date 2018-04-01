@@ -1,0 +1,54 @@
+.container-fluid{
+  margin-left: 55px !important;
+  margin-right: 55px !important;
+  margin-top: 20px !important;
+}
+
+.navbar-header{
+  margin-top: -20px !important;
+}
+.navbar-inverse {
+    margin-bottom: 0 !important;
+
+      background-color: #384245 !important;
+}
+
+.addon{
+  margin-left: 140px;
+}
+
+.addon .input-lg {
+	font-size: 14px;
+  height: 34px;
+	line-height: 20px;
+  margin-top: 10px;
+}
+
+.navbar-right{
+  font-size: 14px;
+  margin-top: 10px !important;
+}
+
+.btn-search {
+
+  margin-top: 10px !important;
+}
+img.avatar {
+    width: 25%;
+    height: 20%;
+    border-radius: 50%;
+}
+
+/* Header */
+.nav-justified{
+  font-size: .69em;
+  background-color: #313739;
+}
+
+a{
+  color:white !important;
+}
+
+.nav-justified a:hover{
+  background-color: #353b3d !important;
+}
