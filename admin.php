@@ -21,11 +21,11 @@ if(!empty($_GET['status'])){
             $statusMsgClass = 'alert-success';
             $statusMsg = 'Members data has been inserted successfully.';
             break;
-        case 'err':
+        case 'Error1':
             $statusMsgClass = 'alert-danger';
             $statusMsg = 'Some problem occurred, please try again.';
             break;
-        case 'invalid_file':
+        case 'Error2':
             $statusMsgClass = 'alert-danger';
             $statusMsg = 'Please upload a valid CSV file.';
             break;
@@ -57,7 +57,7 @@ function fill_status($mysqli)
 <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <link rel="stylesheet" href="css/order.css">
 
@@ -76,9 +76,7 @@ $state="w/point";
 $query = $mysqli->query("SELECT u.tsa_num as tsa_num, u.fname as fname, u.lname as lname, u.date_hired as date_hired, u.emp_stat as emp_stat, sum(points) as points FROM users u INNER JOIN cib c where u.tsa_num=c.tsa_num GROUP by u.tsa_num ORDER BY id DESC");
 $query2 = $mysqli->query("SELECT cib_id, tsa_num, proj_name,points from cib order by cib_id asc");
 ?>
-  <?php if(!empty($statusMsg)){
-      echo '<div class="alert '.$statusMsgClass.'">'.$statusMsg.'</div>';
-  } ?>
+
 
     <div class="container">
         <div class="table-wrapper">
@@ -196,8 +194,10 @@ $query2 = $mysqli->query("SELECT cib_id, tsa_num, proj_name,points from cib orde
                     </div>
                 </div>
 			</div>
-
-            <table class="table table-striped table-hover">
+      <?php if(!empty($statusMsg)){
+          echo '<div class="alert '.$statusMsgClass.'" id="alertbox">'.$statusMsg.'</div>';
+      } ?>
+            <table class="table table-striped table-hover"  id="employee_table">
                 <thead>
                     <tr>
                         <th>Tsa #</th>
@@ -299,6 +299,7 @@ $query2 = $mysqli->query("SELECT cib_id, tsa_num, proj_name,points from cib orde
 </html>
 
 <script>
+$(document).ready(function(){
 $("#sort").change(function(){
 
     alert('Selected value: ' + $(this).val());
@@ -313,8 +314,20 @@ $('.upload_csv').on("submit", function(e){
                      cache:false,                // To unable request pages to be cached
                      processData:false,          // To send DOMDocument or non processed data file it is set to false
                      success: function(data){
-                          console.log(data);
+                       if(data == "Error1")
+                      {
+                           alert("Invalid File");
+                      }
+                      else if(data == "Error2")
+                      {
+                           alert("Please Select File");
+                      }
+                      else
+                      {
+                           $('#employee_table').html(data);
+                      }
                      }
                 })
            });
+         })
 </script>
