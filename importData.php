@@ -30,7 +30,14 @@
                 $remarks = mysqli_real_escape_string($mysqli, $row[12]);
                 $type = mysqli_real_escape_string($mysqli, $row[13]);
                 $password = mysqli_real_escape_string($mysqli, $row[14]);
-                $result=$mysqli->query("INSERT INTO users (id,tsa_num,lname,fname,date_hired,emp_stat,designation,dept,dept_two,division,div_two, team, remarks, type, password) VALUES ($id, $tsa_num,'$lname','$fname','$date_hired','$emp_stat','$designation','$dept','$dept_two','$div','$div_two','$team','$remarks','$type','$password')");
+
+                $prevQuery = "SELECT id FROM users WHERE tsa_num = '".$tsa_num."'";
+
+                $prevResult = $mysqli->query($prevQuery);
+                if($prevResult->num_rows > 0)
+                  $mysqli->query("UPDATE users SET id = '".$id."', lname = '".$tsa_num."', fname = '".$fname."', date_hired= '".$date_hired."', emp_stat='".$emp_stat."',designation='".$designation."',dept='".$dept."', dept_two='".$dept_two."',division='".$div."', div_two = '".$div_two."', team='".$team."',remarks='".$remarks."',type='".$type."', password='".$password."' WHERE tsa_num = '".$tsa_num."'");
+                else
+                  $mysqli->query("INSERT INTO users (id,tsa_num,lname,fname,date_hired,emp_stat,designation,dept,dept_two,division,div_two, team, remarks, type, password) VALUES ($id, $tsa_num,'$lname','$fname','$date_hired','$emp_stat','$designation','$dept','$dept_two','$div','$div_two','$team','$remarks','$type','$password')");
            }
            $state="w/point";
            $query = $mysqli->query("SELECT u.tsa_num as tsa_num, u.fname as fname, u.lname as lname, u.date_hired as date_hired, u.emp_stat as emp_stat, sum(points) as points FROM users u INNER JOIN cib c where u.tsa_num=c.tsa_num GROUP by u.tsa_num ORDER BY id DESC");
